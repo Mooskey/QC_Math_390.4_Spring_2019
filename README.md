@@ -1,8 +1,12 @@
-# MATH 390.4 Intro to Data Science Spring 2019
+#Professor Kapelner My labs and homework are saved in their respective folders, I've just overwritten the files you've placed in there.
+
+
+
+## MATH 390.4 Intro to Data Science Spring 2019
 
 This is the course homepage for Math 390.4 (and Masters level 650.3) for the Spring semester, 2019 at Queens College, City University of New York taught by Professor Adam Kapelner. The course syllabus can be found [here](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/syllabus/syllabus.pdf).
 
-## Lectures
+### Lectures
 
 My lectures can be listened to as youtube tracks [(all lectures)](https://www.youtube.com/playlist?list=) and lecture notes are also scanned in as PDF files contributed by students and myself.
 
