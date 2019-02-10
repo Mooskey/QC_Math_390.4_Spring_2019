@@ -1,5 +1,4 @@
-# **Professor Kapelner, my labs and homework are saved in their respective folders.
-I've just overwritten the files you've placed in there.**
+# **My lab work and homeworks are saved in their respective folders. I've just overwritten the files placed in there.**
 
 
 
