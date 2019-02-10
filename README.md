@@ -1,4 +1,4 @@
-# **My lab work and homeworks are saved in their respective folders. I've just overwritten the files placed in there.**
+# **My lab work and homeworks are saved in their respective folders.**
 
 
 

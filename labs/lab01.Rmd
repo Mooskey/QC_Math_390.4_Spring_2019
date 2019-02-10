@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
   ---
 title: "Lab 1"
 author: "Moshe Weiss"
@@ -41,7 +46,7 @@ prod((1/2)^(0:499))
 * Figure out a means to express the answer more exactly. Not compute exactly, but express more exactly.
 
 ```{r}
-"10e"+ -log10(2)*sum(0:499)
+paste("10 e", -log10(2)*sum(0:499))
 
 ```
 
@@ -63,7 +68,6 @@ sum(sample((0:1),100,replace = TRUE))/100
 * Calculate the average of 500 realizations of Bernoullis with p = 0.9 in one line using the `sample` function.
 
 ```{r}
-#TO-DO
 sum(sample(c(0,1,1,1,1,1,1,1,1,1),500,replace=TRUE))/500
 ```
 
@@ -84,7 +88,6 @@ paste(paste(sample(unlist(strsplit(lorem,"[.] "))), collapse = ". "), ".", sep =
 * In class we generated the variable criminality with levels "none", "infraction", "misdimeanor" and "felony". Create a variable `x_2` here with 100 random elements (equally probable) and ensure the proper ordinal ordering.
 
 ```{r}
-#TO-DO
 y=c("none", "infraction", "misdimeanor", "felony")
 x_2 = factor(sample(y,100,replace = TRUE),levels = c("none", "infraction", "misdimeanor", "felony"), ordered = TRUE)
 x_2
@@ -93,23 +96,24 @@ x_2
 * Convert this variable to binary where 0 is no crime and 1 is any crime. Answer in English: is this the proper binary threshold?
 
 ```{r}
-#TO-DO
 x_3=as.numeric(x_2!="none")
 "No, it doesn't appropriately inform the proclivity to pay back."
+#I'm a bit concerned I have the wrong idea about the binary threshold.
 ```
 
 * Convert this variable to an unordered, nominal factor variable.
 
 ```{r}
 #if converting binary to nominal
-for(index in 1:length(x_3)){
-  if(x_3[index]==1){
-    x_3[index] = "crime"
-  }else{
-    x_3[index] = "no crime"
-  }
-}
-x_3
+#for(index in 1:length(x_3)){
+#  if(x_3[index]==1){
+#    x_3[index] = "crime"
+#  }else{
+#    x_3[index] = "no crime"
+#  }
+#}
+#x_3
+
 #if converting from ordinal to nominal
 factor(x_2,ordered = FALSE)
 ```
@@ -133,6 +137,7 @@ for(instance in x_2){
 
 #columns correspond to order listed in the following function. If row is composed of zeroes, no crim hist
 x_4 = matrix(c(infrctn,msdmnr,flny),100,3)
+x_4
 
 ```
 
