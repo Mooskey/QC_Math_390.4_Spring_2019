@@ -162,7 +162,7 @@ x_4
 sumCol1 = sum(x_4[,1])
 sumCol2 = sum(x_4[,2])
 sumCol3 = sum(x_4[,3])
-nones=100-sum(col1,col2,col3)
+nones=100-sum(sumCol1,sumCol2,sumCol3)
 
 print(paste("Sum of column 1 is less than 100 and greater than 0: ",(sumCol1 > 0 && sumCol1 < 100)))
 print(paste("Sum of column 2 is less than 100 and greater than 0: ",(sumCol2 > 0 && sumCol2 < 100)))
