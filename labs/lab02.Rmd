@@ -10,12 +10,15 @@ First, install the package `testthat` (a widely accepted testing suite for R) fr
 
 ```{r}
 #TO-DO
+install.packages('testthat')
 ```
 
 * Use the `seq` function to create vector `v` consisting of all numbers from -100 to 100. 
 
 ```{r}
 #TO-DO
+help(seq)
+v = seq(-100,100)
 ```
 
 Test using the following code:

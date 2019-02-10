@@ -94,47 +94,81 @@ x_2
 
 ```{r}
 #TO-DO
-as.numeric(x_2!="none")
+x_3=as.numeric(x_2!="none")
+"No, it doesn't appropriately inform the proclivity to pay back."
 ```
 
 * Convert this variable to an unordered, nominal factor variable.
 
 ```{r}
-#TO-DO
-if(x_2==1){
-  x_2 = "crime"
-}else{
-  x_2 = "no crime"
+#if converting binary to nominal
+for(index in 1:length(x_3)){
+  if(x_3[index]==1){
+    x_3[index] = "crime"
+  }else{
+    x_3[index] = "no crime"
+  }
 }
+x_3
+#if converting from ordinal to nominal
+factor(x_2,ordered = FALSE)
 ```
 
 * Convert this variable into three binary variables without any information loss and put them into a data matrix.
 
 ```{r}
-#TO-DO
+#create level vectors
+msdmnr = c()
+infrctn = c()
+flny = c()
+
+# assign appropriate binary value
+for(instance in x_2){
+  flny = c(flny, as.numeric(instance =="felony"))
+  
+  msdmnr = c(msdmnr, as.numeric(instance == "misdimeanor"))
+  
+  infrctn = c(infrctn, as.numeric(instance =="infraction"))
+}
+
+#columns correspond to order listed in the following function. If row is composed of zeroes, no crim hist
+x_4 = matrix(c(infrctn,msdmnr,flny),100,3)
+
 ```
 
 * What should the sum of each row be (in English)? Verify that. 
 
 
 ```{r}
-#TO-DO
+"The sum of each row should be equal to 0 or 1, depending on the existence of criminal history"
+  for(i in (1:100)){
+    if(!(sum(x_4[i,]) == 1 | sum(x_4[i,]) == 0)){
+        stop("Sum of row is not 0 or 1")
+    }
+  }  
+  print(TRUE)
 ```
 
 * How should the column sum look (in English)? Verify that.
 
 
 ```{r}
-#TO-DO
+"The column sum should be between 0 and 100, though it will likely be around 25 since all 4 outcomes are equally probable. The difference between the sum of the sum of the columns and 100 (the total cases) will be the number of people with no crim hist"
+sumCol1 = sum(x_4[,1])
+sumCol2 = sum(x_4[,2])
+sumCol3 = sum(x_4[,3])
+nones=100-sum(col1,col2,col3)
+
+print(paste("Sum of column 1 is less than 100 and greater than 0: ",(sumCol1 > 0 && sumCol1 < 100)))
+print(paste("Sum of column 2 is less than 100 and greater than 0: ",(sumCol2 > 0 && sumCol2 < 100)))
+print(paste("Sum of column 3 is less than 100 and greater than 0: ",(sumCol3 > 0 && sumCol3 < 100)))
 ```
 
 * Generate a matrix with 100 rows where the first column is realization from a normal with mean 17 and variance 38, the second column is uniform between -10 and 10, the third column is poisson with mean 6, the fourth column in exponential with lambda of 9, the fifth column is binomial with n = 20 and p = 0.12 and the sixth column is a binary variable with 24% 1's.
 
 
 ```{r}
-#TO-DO
-help(runif)
-y = matrix(rnorm(100,17,38),runif(100,-10,10),rpois(100,6),rexp(100,6),rbinom(100,20,.12),sample(c(c(rep(1,24)),c(rep(0,76)))))
+y = matrix(c(rnorm(100,17,38),runif(100,-10,10),rpois(100,6),rexp(100,6),rbinom(100,20,.12),sample(c(c(rep(1,24)),c(rep(0,76))))),100,6)
 y
 ```
 
