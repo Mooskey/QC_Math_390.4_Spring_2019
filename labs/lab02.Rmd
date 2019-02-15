@@ -11,6 +11,7 @@ First, install the package `testthat` (a widely accepted testing suite for R) fr
 ```{r}
 #TO-DO
 install.packages('testthat')
+library(testthat)
 ```
 
 * Use the `seq` function to create vector `v` consisting of all numbers from -100 to 100. 
@@ -33,6 +34,13 @@ If there are any errors, the `expect_equal` function will tell you about them. I
 
 ```{r}
 #TO-DO
+my_reverse = function(x){
+  ans = c()
+  for(entry in x){
+    ans = c(entry, ans)
+  }
+  ans
+}
 ```
 
 Test using the following code:
@@ -46,7 +54,9 @@ expect_equal(my_reverse(v), rev(v))
 
 ```{r}
 n = 50
-#TO-DO
+nsqr=n^2
+dataPoints = c(c(rep(0,nsqr/2)),c(rep(1,nsqr/4)),c(rep(2,nsqr/4)))
+R=matrix(sample(dataPoints),n,n)
 ```
 
 Test using the following and write two more tests as specified below:
@@ -54,7 +64,14 @@ Test using the following and write two more tests as specified below:
 ```{r}
 expect_equal(dim(R), c(n, n))
 #TO-DO test that the only unique values are 0, 1, 2
+expect_equal(sort(unique(c(R))),c(0,1,2))
 #TO-DO test that there are exactly 625 2's
+count2 = 0
+for(entry in c(R)){
+  ifelse(entry == 2, (count2=count2+1),count2)
+  
+}
+print(count2)  
 ```
 
 * Randomly punch holes (i.e. `NA`) values in this matrix so that approximately 30% of the entries are missing.
