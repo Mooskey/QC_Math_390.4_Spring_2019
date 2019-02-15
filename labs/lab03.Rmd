@@ -10,14 +10,12 @@ date: "11:59PM February 24, 2019"
 You will code the "perceptron learning algorithm". Take a look at the comments above the function. This is standard "Roxygen" format for documentation. Hopefully, we will get to packages at some point and we will go over this again. It is your job also to fill in this documentation.
 
 ```{r}
-#' TO-DO: Provide a name for this function 
-#'
-#' TO-DO: Explain what this function does in a few sentences
-#'
-#' @param Xinput      TO-DO: Explain this
-#' @param y_binary    TO-DO: Explain this
-#' @param MAX_ITER    TO-DO: Explain this
-#' @param w           TO-DO: Explain this
+#' Perceptron Learning Algorithm
+#' Fits a line between data, assuming linear separability
+#' @param Xinput      Numeric matrix of dim(nxp) where n is number of observations and p is number of features
+#' @param y_binary    Binary vector of length n
+#' @param MAX_ITER    Number of iterations, defaults to 1000
+#' @param w           Initial numeric vector of weights of length p+1
 #'
 #' @return            The computed final parameter (weight) as a vector of length p + 1
 #' @export            [In a package, this documentation parameter signifies this function becomes a public method. Leave this blank.]
