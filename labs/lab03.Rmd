@@ -77,7 +77,7 @@ Now, let us run the algorithm and see what happens:
 Xy_simple$first_feature
 w_vec_simple_per = perceptron_learning_algorithm(
   cbind(Xy_simple$first_feature, Xy_simple$second_feature),
-  as.numeric(Xy_simple$response == 1,1))
+  as.numeric(Xy_simple$response == 1))
 w_vec_simple_per
 ```
 
