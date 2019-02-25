@@ -24,12 +24,16 @@ Solve for the least squares line by computing $b_0$ and $b_1$ _without_ using th
 
 ```{r}
 #TO-DO
+meanY = sum(y)/n
+meanX = sum(x)/n
+b_1 = (sum(x*y) - n*meanX*meanY)/(sum(x^2)-n*meanX^2)
+b_0 = meanY - b1*meanX
 ```
 
 Verify your computations are correct using the `lm` function in R:
 
 ```{r}
-lm_mod = #TO-DO
+lm_mod = lm(y~x)
 b_vec = coef(lm_mod)
 pacman::p_load(testthat)
 expect_equal(b_0, as.numeric(b_vec[1]), tol = 1e-4)
@@ -39,19 +43,25 @@ expect_equal(b_1, as.numeric(b_vec[2]), tol = 1e-4)
 6. We are now going to repeat one of the first linear model building exercises in history --- that of Sir Francis Galton in 1886. First load up package `HistData`.
 
 ```{r}
-#TO-DO
+pacman::p_load(HistData)
 ```
 
 In it, there is a dataset called `Galton`. Load it up.
 
 ```{r}
-#TO-DO
+galton = data.frame(Galton)
 ```
 
 You now should have a data frame in your workspace called `Galton`. Summarize this data frame and write a few sentences about what you see. Make sure you report $n$, $p$ and a bit about what the columns represent and how the data was measured. See the help file `?Galton`.
 
 ```{r}
-#TO-DO
+galton
+summary(galton)
+str(galton)
+
+"p = 2: average mother and father height, and child height (females scaled by 1.08)"
+"n=928"
+
 ```
 
 TO-DO
@@ -59,13 +69,21 @@ TO-DO
 Find the average height (include both parents and children in this computation).
 
 ```{r}
-avg_height = #TO-DO
+pHeights = galton$parent
+cHeights = galton$child
+n=length(galton$parent)
+p=length(galton)
+avg_height = (sum(pHeights*2) + sum(cHeights))/(3*n)
 ```
 
 If you were to use the null model, what would the RMSE be of this model be?
 
 ```{r}
-#TO-DO
+yBar = sum(cHeights/n)
+sse = sum((cHeights - yBar)^2)
+mse = sse/(n-2)
+rmse = sqrt(mse)
+paste("RMSE:",rmse)
 ```
 
 Note that in Math 241 you learned that the sample average is an estimate of the "mean", the population expected value of height. We will call the average the "mean" going forward since it is probably correct to the nearest tenth of an inch with this amount of data.
@@ -74,10 +92,22 @@ Run a linear model attempting to explain the childrens' height using the parents
 
 ```{r}
 #TO-DO
+lmHeights = lm(child~parent, data = Galton)
+b_0 = as.numeric(coef(lmHeights)[1])
+b_1 = as.numeric(coef(lmHeights)[2])
+R2 = summary(lmHeights)$r.squared
+RMSE = summary(lmHeights)$sigma
+paste("b_0:",b_0)
+paste("b_1:",b_1)
+paste("R^2:",R2)
+paste("RMSE:", RMSE)
 ```
 
 Interpret all four quantities: $b_0$, $b_1$, RMSE and $R^2$.
 
+b_0 is your intercept. b_1 is the change in child's height in a one unit change of the parent's height.
+RMSE is the range of normal variation in child height (give or take)
+R squared
 TO-DO
 
 How good is this model? How well does it predict? Discuss.
