@@ -1,6 +1,6 @@
 ---
 title: "Review Lab 1"
-author: "Moshe Weisss"
+author: "Moshe Weiss"
 output: pdf_document
 ---
 
