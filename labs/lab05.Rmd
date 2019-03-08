@@ -1,6 +1,6 @@
 ---
 title: "Lab 5"
-author: "Your Name Here"
+author: "Moshe Weiss"
 output: pdf_document
 date: "11:59PM March 16, 2019"
 ---
@@ -9,84 +9,128 @@ Load the Boston housing data frame and create the vector $y$ (the median value) 
 
 ```{r}
 #TO-DO
+data(Boston, package="MASS")
+head(summary(Boston))
+y=Boston$medv
+X=Boston
+X$medv=NULL
+X=cbind(rep(1,nrow(Boston)), as.matrix(Boston[,1:13]))
+colnames(X)[1]="(Intercept)"
+X
+
 ```
 
 Run the OLS linear model to get $b$, the vector of coefficients. Do not use `lm`.
 
 ```{r}
-#TO-DO
+b = solve(t(X) %*% X)%*%t(X)%*%y
 ```
 
 Find the hat matrix for this regression `H` and find its rank. Is this rank expected?
 
 ```{r}
-#TO-DO
+H = X%*%solve(t(X) %*% X)%*%t(X)
 ```
 
 Verify this is a projection matrix by verifying the two sufficient conditions. Use the `testthat` library's `expect_equal(matrix1, matrix2, tolerance = 1e-2)`.
 
 ```{r}
-#TO-DO
+library(pacman)
+pacman::p_load(testthat)
+expect_equal(H, t(H), tolerance = 1e-2)
+expect_equal(H,H%*%H, tolerance = 1e-2)
 ```
 
 Find the matrix that projects onto the space of residuals `H_comp` and find its rank. Is this rank expected?
 
 ```{r}
-#TO-DO
+I = diag(nrow(H))
+H_comp = I - H
+rankMatrix(H_comp)
 ```
 
 Verify this is a projection matrix by verifying the two sufficient conditions. Use the `testthat` library.
 
 ```{r}
-#TO-DO
+expect_equal(H_comp, t(H_comp), tolerance = 1e-2)
+expect_equal(H_comp,H_comp%*%H_comp, tolerance = 1e-2)
 ```
 
 Calculate $\hat{y}$.
 
 ```{r}
 #TO-DO
+yhat = H %*% y
+head(yhat)
 ```
 
 Calculate $e$ as the difference of $y$ and $\hat{y}$ and the projection onto the space of the residuals. Verify the two means of calculating the residuals provide the same results.
 
 ```{r}
-#TO-DO
+e = y-yhat
+expect_equal(e,H_comp%*%y,)
 ```
 
 Calculate $R^2$ and RMSE.
 
 ```{r}
-#TO-DO
+sse = sum(e^2)
+sst = sum((y-mean(y))^2)
+Rsquared = 1- sse/sst
+Rsquared
+
+mse = sse/(nrow(X)-ncol(X))
+rmse = sqrt(mse) #stdev of errosmr
 ```
 
 Verify $\hat{y}$ and $e$ are orthogonal.
 
 ```{r}
-#TO-DO
+t(e) %*% yhat 
 ```
 
 Verify $\hat{y} - \bar{y}$ and $e$ are orthogonal.
 
 ```{r}
-#TO-DO
+t(e)%*% (yhat - mean(y))
 ```
 
 Find the cosine-squared of $y - \bar{y}$ and $\hat{y} - \bar{y}$ and verify it is the same as $R^2$.
 
 ```{r}
-#TO-DO
+y_minus_ybar = y - mean(y)
+yhat_minus_ybar = yhat - mean(y)
+leng_y_minus_ybar = sqrt( sum(y_minus_ybar^2))
+leng_yhat_minus_ybar = sqrt( sum(yhat_minus_ybar^2))
+
+theta = acos( (t(y_minus_ybar) %*% yhat_minus_ybar)/(leng_y_minus_ybar*leng_yhat_minus_ybar) )
+theta*180/pi
+cos_theta_sq = cos(theta)^2
+cos_theta_sq
+
 ```
 
 Verify the sum of squares identity which we learned was due to the Pythagorean Theorem (applies since the projection is specifically orthogonal).
 
 ```{r}
 #TO-DO
+leng_y_minus_ybar^2 - leng_yhat_minus_ybar^2 - sse
 ```
 
 Create a matrix that is $(p + 1) \times (p + 1)$ full of NA's. Label the columns the same columns as X. Do not label the rows. For the first row, find the OLS estimate of the $y$ regressed on the first column only and put that in the first entry. For the second row, find the OLS estimates of the $y$ regressed on the first and second columns of $X$ only and put them in the first and second entries. For the third row, find the OLS estimates of the $y$ regressed on the first, second and third columns of $X$ only and put them in the first, second and third entries, etc. For the last row, fill it with the full OLS estimates.
 
 ```{r}
-#TO-DO
+M = matrix(NA,ncol(X),ncol(X))
+
+colnames(M)=colnames(X)
+for(j in 1:ncol(M)){
+  X_j=X[ , 1:j, drop = FALSE]
+  b = solve(t(X_j) %*% X_j)%*%t(X_j)%*%y
+  M[j, 1:j] = b
+}
+
+M
+
 ```
 
 Examine this matrix. Why are the estimates changing from row to row as you add in more predictors?
@@ -97,18 +141,27 @@ Clear the workspace and load the diamonds dataset.
 
 ```{r}
 #TO-DO
+rm(list=ls())
+pacman::p_load(ggplot2)
+data(ggplot2, diamonds)
 ```
 
 Extract $y$, the price variable and "c", the nominal variable "color" as vectors.
 
 ```{r}
-#TO-DO
+y = as.vector(diamonds$price)
+c = as.vector(diamonds$color)
 ```
 
 Convert the "c" vector to $X$ which contains an intercept and an appropriate number of dummies. Let the color G be the refernce category as it is the modal color. Name the columns of $X$ appropriately. The first should be "(Intercept)". Delete c.
 
 ```{r}
-#TO-DO
+X = rep(1,nrow(diamonds))
+for(level in levels(diamonds$color)){
+  if(level!="G"){X = cbind(X, diamonds$color == level)}
+}
+colnames(X) = c("Intercept", "Is_D", "Is_E","Is_F","Is_H","Is_I","Is_J")
+head(X)
 ```
 
 Repeat the iterative exercise above we did for Boston here.
