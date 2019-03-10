@@ -1,6 +1,6 @@
 ---
 title: "Lab 4"
-author: "Your Name Here"
+author: "Moshe Weiss"
 output: pdf_document
 date: "11:59PM March 9, 2019"
 ---
@@ -23,11 +23,10 @@ y = beta_0 + beta_1 * x + rnorm(n, mean = 0, sd = 0.33)
 Solve for the least squares line by computing $b_0$ and $b_1$ _without_ using the functions `mean`, `cor`, `cov`, `var`, `sd` but instead computing it from the $x$ and $y$ quantities manually using base function such as `sum` and other basic operators. See the class notes.
 
 ```{r}
-#TO-DO
 meanY = sum(y)/n
 meanX = sum(x)/n
 b_1 = (sum(x*y) - n*meanX*meanY)/(sum(x^2)-n*meanX^2)
-b_0 = meanY - b1*meanX
+b_0 = meanY - b_1*meanX
 ```
 
 Verify your computations are correct using the `lm` function in R:
@@ -55,7 +54,6 @@ galton = data.frame(Galton)
 You now should have a data frame in your workspace called `Galton`. Summarize this data frame and write a few sentences about what you see. Make sure you report $n$, $p$ and a bit about what the columns represent and how the data was measured. See the help file `?Galton`.
 
 ```{r}
-galton
 summary(galton)
 str(galton)
 
@@ -64,7 +62,7 @@ str(galton)
 
 ```
 
-TO-DO
+
 
 Find the average height (include both parents and children in this computation).
 
@@ -74,6 +72,7 @@ cHeights = galton$child
 n=length(galton$parent)
 p=length(galton)
 avg_height = (sum(pHeights*2) + sum(cHeights))/(3*n)
+avg_height
 ```
 
 If you were to use the null model, what would the RMSE be of this model be?
@@ -91,7 +90,6 @@ Note that in Math 241 you learned that the sample average is an estimate of the 
 Run a linear model attempting to explain the childrens' height using the parents' height. Use `lm` and use the R formula notation. Compute and report $b_0$, $b_1$, RMSE and $R^2$. Use the correct units to report these quantities.
 
 ```{r}
-#TO-DO
 lmHeights = lm(child~parent, data = Galton)
 b_0 = as.numeric(coef(lmHeights)[1])
 b_1 = as.numeric(coef(lmHeights)[2])
@@ -107,20 +105,21 @@ Interpret all four quantities: $b_0$, $b_1$, RMSE and $R^2$.
 
 b_0 is your intercept. b_1 is the change in child's height in a one unit change of the parent's height.
 RMSE is the range of normal variation in child height (give or take)
-R squared
-TO-DO
+R squared is how much better our model is than the null
+
 
 How good is this model? How well does it predict? Discuss.
 
-TO-DO
+The goodness of a model is determined by its usefuleness, so the answer to that depends on the use-case. We do have an idea of how related parent height is to child height, with some error.
 
 It is reasonable to assume that parents and their children have the same height? Explain why this is reasonable using basic biology and common sense.
 
-TO-DO
+Yes.
+Height is mostly genetic, and genes are inherited from both parents.
 
 If they were to have the same height and any differences were just random noise with expectation 0, what would the values of $\beta_0$ and $\beta_1$ be?
 
-TO-DO
+Beta 0 would equal average parent height, and beta 1 would equal 0.
 
 Let's plot (a) the data in $\mathbb{D}$ as black dots, (b) your least squares line defined by $b_0$ and $b_1$ in blue, (c) the theoretical line $\beta_0$ and $\beta_1$ if the parent-child height equality held in red and (d) the mean height in green.
 
@@ -139,52 +138,78 @@ ggplot(Galton, aes(x = parent, y = child)) +
 
 Fill in the following sentence: 
 
-TO-DO: Children of short parents became ... on average and children of tall parents became ... on average.
+Children of short parents became taller on average and children of tall parents became Shorter on average.
 
 Why did Galton call it "Regression towards mediocrity in hereditary stature" which was later shortened to "regression to the mean"?
 
-TO-DO
+Because of the above finding: children tended toward the mean.
 
 Why should this effect be real?
 
-TO-DO
+The genetics of height is very complicated, but perhaps the average or dominant genetic encoding correlates to our mean.
 
 You now have unlocked the mystery. Why is it that when modeling with $y$ continuous, everyone calls it "regression"? Write a better, more descriptive and appropriate name for building predictive models with $y$ continuous.
 
-TO-DO
+Because of Galton's discovery regarding heredity and mean height.
+
+Linear factor optimization
 
 Create a dataset $\mathbb{D}$ which we call `Xy` such that the linear model as $R^2$ about 50\% and RMSE approximately 1.
 
 ```{r}
-x = #TO-DO
-y = #TO-DO
+x = c(7,11,7,11,7,11)
+y = c(6,9,8,10,7,8)
 Xy = data.frame(x = x, y = y)
+summary(Xy)
+lmodel = lm(y~x)
+summary(lmodel)
 ```
 
 Create a dataset $\mathbb{D}$ which we call `Xy` such that the linear model as $R^2$ about 0\% but x, y are clearly associated.
 
 ```{r}
-x = #TO-DO
-y = #TO-DO
+x = c(1,2,3,4,5)
+y = c(1,2,1,2,1)
 Xy = data.frame(x = x, y = y)
+summary(lm(y~x))
 ```
 
 Load up the famous iris dataset and drop the data for Species "virginica".
 
 ```{r}
 #TO-DO
+data(iris)
+iris=as.data.frame(iris[iris$Species != "virginica", ])
 ```
 
 If the only input x is  Species and you are trying to predict y which is Petal.Length, what would a reasonable, naive prediction be under both Species? Hint: it's what we did in class.
 
 ```{r}
-#TO-DO
+x = iris$Species
+y = iris$Petal.Length
+sumRefCat = 0
+sumAltCat = 0
+n=numeric()
+for(i in 1:length(x)){
+  if(x[i]=='setosa'){
+    sumRefCat = sumRefCat + y[i]
+    n=i
+  }else{
+      sumAltCat = sumAltCat + y[i]
+    }
+  
+}
+b_0 = sumRefCat/n
+b_1 = sumAltCat/(length(x)-n) - b_0
+#x = {0,1}
+#y = b_0 + b_1 * x
 ```
 
 Prove that this is the OLS model by fitting an appropriate `lm` and then using the predict function to verify you get the same answers as you wrote previously.
 
 ```{r}
-#TO-DO
+summary(lm(y~x))
+predict(lm(y~x))
 ```
 
 
