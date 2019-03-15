@@ -16,7 +16,6 @@ X=Boston
 X$medv=NULL
 X=cbind(rep(1,nrow(Boston)), as.matrix(Boston[,1:13]))
 colnames(X)[1]="(Intercept)"
-X
 
 ```
 
@@ -37,6 +36,7 @@ Verify this is a projection matrix by verifying the two sufficient conditions. U
 ```{r}
 library(pacman)
 pacman::p_load(testthat)
+pacman::p_load(Matrix)
 expect_equal(H, t(H), tolerance = 1e-2)
 expect_equal(H,H%*%H, tolerance = 1e-2)
 ```
@@ -59,7 +59,6 @@ expect_equal(H_comp,H_comp%*%H_comp, tolerance = 1e-2)
 Calculate $\hat{y}$.
 
 ```{r}
-#TO-DO
 yhat = H %*% y
 head(yhat)
 ```
@@ -80,7 +79,7 @@ Rsquared = 1- sse/sst
 Rsquared
 
 mse = sse/(nrow(X)-ncol(X))
-rmse = sqrt(mse) #stdev of errosmr
+rmse = sqrt(mse) #stdev of errors
 ```
 
 Verify $\hat{y}$ and $e$ are orthogonal.
@@ -113,7 +112,6 @@ cos_theta_sq
 Verify the sum of squares identity which we learned was due to the Pythagorean Theorem (applies since the projection is specifically orthogonal).
 
 ```{r}
-#TO-DO
 leng_y_minus_ybar^2 - leng_yhat_minus_ybar^2 - sse
 ```
 
@@ -135,7 +133,7 @@ M
 
 Examine this matrix. Why are the estimates changing from row to row as you add in more predictors?
 
-#TO-DO
+Because each time, we're isolating more features and finding their variation from the mean
 
 Clear the workspace and load the diamonds dataset.
 
@@ -143,7 +141,7 @@ Clear the workspace and load the diamonds dataset.
 #TO-DO
 rm(list=ls())
 pacman::p_load(ggplot2)
-data(ggplot2, diamonds)
+data(diamonds)
 ```
 
 Extract $y$, the price variable and "c", the nominal variable "color" as vectors.
@@ -168,21 +166,48 @@ Repeat the iterative exercise above we did for Boston here.
 
 ```{r}
 #TO-DO
+M = matrix(NA,ncol(X),ncol(X))
+
+colnames(M)=colnames(X)
+for(j in 1:ncol(M)){
+  X_j=X[ , 1:j, drop = FALSE]
+  b = solve(t(X_j) %*% X_j)%*%t(X_j)%*%y
+  M[j, 1:j] = b
+}
+
+M
+
 ```
 
 Why didn't the estimates change as we added more and more features?
 
 #TO-DO
-
+They did, for the same reason as before
 
 ```{r}
 #TO-DO
+#did it
 ```
 
 Create a vector $y$ by simulating $n = 100$ standard iid normals. Create a matrix of size 100 x 2 and populate the first column by all ones (for the intercept) and the second column by 100 standard iid normals. Find the $R^2$ of an OLS regression of `y ~ X`. Use matrix algebra.
 
 ```{r}
 #TO-DO
+y = rnorm(100)
+X = matrix(cbind(rep(1,100),rnorm(100)),100,2)
+
+b = solve(t(X) %*% X)%*%t(X)%*%y
+H = X%*%solve(t(X) %*% X)%*%t(X)
+yhat = X%*%b
+
+e = y-yhat
+sse = sum(e^2)
+sst = sum((y-mean(y))^2)
+Rsquared = 1- sse/sst
+Rsquared
+
+
+
 ```
 
  from the last problem. Find the $R^2$ of an OLS regression of `y ~ X`. You can use the `summary` function of an `lm` model.
