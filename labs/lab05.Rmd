@@ -101,7 +101,7 @@ len_y_minus_y_bar = sqrt(  sum(y_minus_y_bar^2)  )
 len_yhat_minus_y_bar = sqrt(  sum(yhat_minus_y_bar^2)  )
 
 theta = acos( (t(y_minus_y_bar) %*% yhat_minus_y_bar) / (len_y_minus_y_bar * len_yhat_minus_y_bar) )
-cos_theta * (180 / pi)
+theta * (180 / pi)
 cos_theta_sqrd = cos(theta)^2
 cos_theta_sqrd
 ```
@@ -115,7 +115,6 @@ len_y_minus_y_bar^2 - len_yhat_minus_y_bar^2 - sse
 Create a matrix that is $(p + 1) \times (p + 1)$ full of NA's. Label the columns the same columns as X. Do not label the rows. For the first row, find the OLS estimate of the $y$ regressed on the first column only and put that in the first entry. For the second row, find the OLS estimates of the $y$ regressed on the first and second columns of $X$ only and put them in the first and second entries. For the third row, find the OLS estimates of the $y$ regressed on the first, second and third columns of $X$ only and put them in the first, second and third entries, etc. For the last row, fill it with the full OLS estimates.
 
 ```{r}
-<<<<<<< HEAD
 M = matrix(NA,ncol(X),ncol(X))
 
 colnames(M)=colnames(X)
@@ -125,24 +124,7 @@ for(j in 1:ncol(M)){
   M[j, 1:j] = b
 }
 
-M
-
-=======
-M = matrix(NA, nrow = ncol(X), ncol = ncol(X))
-colnames(M) = colnames(X)
-X_j = X[, 1, drop = FALSE]
-b = solve(t(X_j) %*% X_j) %*% t(X_j) %*% y
-M[1, 1] = b
-X_j_2 = X[ , 1:2]
-b = solve(t(X_j_2) %*% X_j_2) %*% t(X_j_2) %*% y
-b
-for(j in 1 : ncol(M)){
-  X_j = X[, 1 : j, drop = FALSE]
-  b = solve(t(X_j) %*% X_j) %*% t(X_j) %*% y
-  M[j, 1:j] = b
-}
 round(M, 2)
->>>>>>> upstream/master
 ```
 
 Examine this matrix. Why are the estimates changing from row to row as you add in more predictors?
@@ -152,58 +134,34 @@ Because each time, we're isolating more features and finding their variation fro
 Clear the workspace and load the diamonds dataset.
 
 ```{r}
-<<<<<<< HEAD
-#TO-DO
 rm(list=ls())
 pacman::p_load(ggplot2)
 data(diamonds)
-=======
-pacman::p_load(ggplot2)
-data(diamonds, package = "ggplot2")
->>>>>>> upstream/master
 ```
 
 Extract $y$, the price variable and "c", the nominal variable "color" as vectors.
 
 ```{r}
-<<<<<<< HEAD
-y = as.vector(diamonds$price)
-c = as.vector(diamonds$color)
-=======
 summary(diamonds)
 y = diamonds$price
 c = diamonds$color
 table(c)
->>>>>>> upstream/master
 ```
 
 Convert the "c" vector to $X$ which contains an intercept and an appropriate number of dummies. Let the color G be the refernce category as it is the modal color. Name the columns of $X$ appropriately. The first should be "(Intercept)". Delete c.
 
 ```{r}
-<<<<<<< HEAD
 X = rep(1,nrow(diamonds))
 for(level in levels(diamonds$color)){
   if(level!="G"){X = cbind(X, diamonds$color == level)}
 }
 colnames(X) = c("Intercept", "Is_D", "Is_E","Is_F","Is_H","Is_I","Is_J")
-=======
-
-X = rep(1, nrow(diamonds))
-X = cbind(X, diamonds$color == 'D')
-X = cbind(X, diamonds$color == 'E')
-X = cbind(X, diamonds$color == 'F')
-X = cbind(X, diamonds$color == 'H')
-X = cbind(X, diamonds$color == 'I')
-X = cbind(X, diamonds$color == 'J')
-colnames(X) = c("Intercept", "is_D", "is_E", "is_F", "is_H", "is_I", "is_J")
->>>>>>> upstream/master
 head(X)
 ```
 
 Repeat the iterative exercise above we did for Boston here.
 
 ```{r}
-#TO-DO
 M = matrix(NA,ncol(X),ncol(X))
 
 colnames(M)=colnames(X)
@@ -218,19 +176,11 @@ M
 ```
 
 Why didn't the estimates change as we added more and more features?
-
-#TO-DO
-They did, for the same reason as before
-
-```{r}
-#TO-DO
-#did it
-```
+  They did, for the same reason as before
 
 Create a vector $y$ by simulating $n = 100$ standard iid normals. Create a matrix of size 100 x 2 and populate the first column by all ones (for the intercept) and the second column by 100 standard iid normals. Find the $R^2$ of an OLS regression of `y ~ X`. Use matrix algebra.
 
 ```{r}
-#TO-DO
 y = rnorm(100)
 X = matrix(cbind(rep(1,100),rnorm(100)),100,2)
 
@@ -248,18 +198,39 @@ Rsquared
 
 ```
 
- from the last problem. Find the $R^2$ of an OLS regression of `y ~ X`. You can use the `summary` function of an `lm` model.
+From the last problem. Find the $R^2$ of an OLS regression of `y ~ X`. You can use the `summary` function of an `lm` model.
+
+```{r}
+linear_model = lm('y~X')
+summary(linear_model)$r.squared
+summary(linear_model)$sigma
+```
 
 Write a for loop to each time bind a new column of 100 standard iid normals to the matrix $X$ and find the $R^2$ each time until the number of columns is 100. Create a vector to save all $R^2$'s. What happened??
 
 
 ```{r}
-#TO-DO
+numRows = nrow(X)
+startCol = ncol(X) + 1
+r_squared_vec = c()
+X = as.data.frame(X)
+y=as.data.frame(y)
+for(j in (startCol : 100)){
+  X[,j] = rnorm(numRows,0,1)
+  r_squared_vec = c(r_squared_vec, summary(lm('as.matrix(y)~as.matrix(X)'))$r.squared)
+}
+r_squared_vec
+
+#Everytime we add a new independent column into our 'historical data' matrix X, our R^2 goes up, regardless of the meaningfulness of that data. When we've a matrix of linearly independent columns that is nxn with full rank, our matrix becomes invertible and so the projection of y onto y hat is y.
 ```
 
 Add one final column to $X$ to bring the number of columns to 101. Then try to compute $R^2$. What happens and why?
 
 ```{r}
-#TO-DO
+
+X[,ncol(X)+1] = rnorm(1,0,1)
+summary(lm('as.matrix(y)~as.matrix(X)'))$r.squared
+
+#R squared remains one because our matrix X when dim(X) = n x n spans n dimensional space. Additional columns thereafter are linear combinations of the first n, and add no new information.
 ```
 
