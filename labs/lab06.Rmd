@@ -20,7 +20,7 @@ Find the OLS estimate and OLS predictions without using `lm`.
 b = solve(t(X) %*% X) %*% t(X) %*% y
 b
 yhat = X %*% b
-yhat
+head(yhat)
 
 ```
 
@@ -64,7 +64,7 @@ head(sumOrthProj)
 How much double counting occurred? Measure the magnitude relative to the true LS orthogonal projection.
 
 ```{r}
-sumOrthProj / yhat
+head(sumOrthProj / yhat)
 ```
 
 Convert $X$ into $Q$ where $Q$ has the same column space as $X$ but has orthogonal columns. You can use the function `orthogonal_projection`. This is essentially gram-schmidt.
@@ -84,7 +84,7 @@ rankMatrix(Q)
 dim(Q)
 ncol(X)
 
-t(Q) %*% Q
+head(t(Q) %*% Q)
 ```
 
 Make $Q$'s columns orthonormal.
@@ -100,37 +100,115 @@ Verify $Q^T$ is the inverse of $Q$.
 
 ```{r}
 #TO-DO
-t(Q) %*% Q
+head(t(Q) %*% Q)
 ```
 
 
 Project $Y$ onto $Q$ and verify it is the same as the OLS fit.
 
 ```{r}
-cbind(Q %*% t(Q) %*% y, yhat)
+head(cbind(Q %*% t(Q) %*% y, yhat))
 ```
 
 
 Project $Y$ onto the columns of $Q$ one by one and verify it sums to be the projection onto the whole space.
 
 ```{r}
-#TO-DO
+y_q_projection = Q %*% diag(ncol(Q)) %*% t(Q) %*% y
+y_q_cols_projection = matrix(nrow = nrow(Q), ncol = 0)
+for(j in 1:ncol(Q)){
+  y_q_cols_projection = cbind(y_q_cols_projection, Q[, j] %*% t(Q[, j]) %*% y)
+}
+cbind(head(y_q_projection), head(as.matrix(rowSums(y_q_cols_projection))))
 ```
 
-Verify the OLS fit squared lengh is the sum of squared lengths of each of the orthogonal projections.
+
+Verify the OLS fit squared length is the sum of squared lengths of each of the orthogonal projections.
 
 ```{r}
-#TO-DO
+sum(t(y_q_cols_projection) %*% y_q_cols_projection)
+t(yhat) %*% yhat
+
 ```
 
 Rewrite the "The monotonicity of SSR" demo from the lec06 notes but instead do it for RMSE. Comment every line in detail. Write about what the plots means.
 
 ```{r}
 #TO-DO
+n = 100
+y = rnorm(n)
+RMSE = array(NA, n)
+
+#create a matrix with the correct number of rows but no columns
+X = matrix(NA, nrow = n, ncol = 0)
+#Intercept
+X = cbind(1, X)
+
+#Residual of the null
+RMSE[1] =summary(lm('y ~ X'))$sigma
+
+#for p, tack on a new random continuous predictor:
+for (j in 2 : n){
+  X = cbind(X, rnorm(n))
+  #tack new RSME onto RSME list
+  RMSE[j] = summary(lm('y ~ X'))$sigma
+}
+
+RMSE
+#I expected to see a decline in RMSE with more features, but there really isn't. It just becomes NaN when p+1=n
 ```
 
+```{r}
+pacman::p_load(ggplot2)
+base = ggplot(data.frame(j = 1 : n, RMSEs = RMSE))
+base + geom_line(aes(x = j, y = RMSE))
+```
 Rewrite the "Overfitting" demo from the lec06 notes. Comment every line in detail. Write about what the plots means.
 
 ```{r}
-#TO-DO
+rm(list=ls())
+bbeta = c(1, 2, 3, 4) #our b vec
+
+#build training data
+n = 100 #rows
+X = cbind(1, rnorm(n), rnorm(n), rnorm(n)) #p+1 = 4
+y = X %*% bbeta + rnorm(n, 0, 0.3)
+
+#build test data
+n_star = 100 #new number of rows
+X_star = cbind(1, rnorm(n), rnorm(n), rnorm(n_star)) #oos p+1 = 4
+y_star = X_star %*% bbeta + rnorm(n, 0, 0.3)
+
+all_betas = matrix(NA, n, n)
+all_betas[4, 1 : 4] = coef(lm(y ~ 0 + X))
+in_sample_rmse_by_p = array(NA, n)
+for (j in 5 : n){
+  X = cbind(X, rnorm(n))
+  lm_mod = lm(y ~ 0 + X)
+  all_betas[j, 1 : j] = coef(lm_mod)
+  y_hat = X %*% all_betas[j, 1 : j]
+  in_sample_rmse_by_p[j] = sqrt(sum((y - y_hat)^2))
+}
+plot(1 : n, in_sample_rmse_by_p)
+
+all_betas[4 : n, 1 : 4]
+b_error_by_p = rowSums((all_betas[, 1 : 4] - matrix(rep(bbeta, n), nrow = n, byrow = TRUE))^2)
+plot(1 : n, b_error_by_p)
+
+#look at out of sample error in the case of only the first four features
+oos_rmse_by_p = array(NA, n)
+for (j in 4 : n){
+  y_hat_star = X_star %*% all_betas[j, 1 : 4]
+  oos_rmse_by_p[j] = sqrt(sum((y_star - y_hat_star)^2))
+}
+plot(1 : n, oos_rmse_by_p)
+
+#look at out of sample error in the case of the random features too
+oos_rmse_by_p = array(NA, n)
+for (j in 5 : n){
+  X_star = cbind(X_star, rnorm(n))
+  y_hat_star = X_star %*% all_betas[j, 1 : j]
+  oos_rmse_by_p[j] = sqrt(sum((y_star - y_hat_star)^2))
+}
+plot(1 : n, oos_rmse_by_p)
 ```
