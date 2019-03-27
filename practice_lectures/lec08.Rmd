@@ -19,8 +19,8 @@ x = runif(n, -2, 5)
 h_star_x = beta_0 + beta_1 * x + beta_2 * x^2
 
 #actual data differs due to information we don't have
-epsilon = rnorm(n)
-y = h_star_x + epsilon
+epsilon = rnorm(n) # misspec and ignorance
+y = h_star_x + epsilon # h*(x) + f(x) - h*(x) + t(z) - f(x)
 
 #scatterplot it
 df = data.frame(x = x, y = y, h_star_x = h_star_x)
