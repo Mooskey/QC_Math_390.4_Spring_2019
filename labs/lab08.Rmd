@@ -170,20 +170,36 @@ Create a data generating process where $x$ is uniform between 0 and 10 and $y$ i
 We now move to Rcpp. Load the library.
 
 ```{r}
-#TO-DO
+pacman::p_load(Rcpp)
 ```
 
 Write an R function `is_odd` and a C++ function `is_odd_cpp` that evaluates if a number is odd and returns true if so.
 
 
 ```{r}
-#TO-DO
+is_odd = function(n){
+  n %% 2 == 1
+}
+
+cppFunction("
+  bool is_odd_cpp(int n){
+    return n%2 == 1;
+  }
+")
 ```
 
 Using `system.time', run both functions 1,000,000 times on the numbers 1, 2, ..., 1000000. Who is faster and by how much?
 
 ```{r}
-#TO-DO
+is = 1:1e6
+system.time(
+  is_odd(is)
+)
+system.time(
+  for(i in is){
+    is_odd_cpp(i)
+  }
+)
 ```
 
 Write an R function `fun` and a C++ function `fun_cpp` that takes a natural number returns $n$ if $n$ is 0 or 1 otherwise the result of the function on $n - 1$ and $n - 2$. This is the function that returns the $n$th Fibonacci number.
