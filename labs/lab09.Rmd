@@ -21,31 +21,36 @@ str(storms)
 summary(storms)
 head(storms)
 storms %<>%
-  mutate(name = factor(name), staus = factor(status))
+  mutate(name = factor(name), status = factor(status))
 ```
 
 Reorder the columns so name is first, status is second, category is third and the rest are the same. Verify.
 
 ```{r}
-#TO-DO
+storms %<>%
+    select(name,status,category,everything())
 ```
 
 Sort the dataframe by year (most recent first) then category of the storm (most sever first). Verify.
 
 ```{r}
-#TO-DO
+storms %<>%
+  arrange(desc(year), desc(category))
 ```
 
 Create a new feature `wind_speed_per_unit_pressure`.
 
 ```{r}
-#TO-DO
+storms %<>%
+  mutate(wind_speed_per_unit_pressure = wind/pressure)
+storms
 ```
 
 Create a new feature: `average_diameter` which averages the two diameters.
 
 ```{r}
-#TO-DO
+storms %<>%
+  mutate(average_diameter = )
 ```
 
 At home: calculate the distance from each storm observation to Miami in a new variable `distance_to_miami`.
@@ -69,31 +74,40 @@ At home: using the `lubridate` package, create new variables `day_of_week` which
 Create a new data frame `serious_storms` which are category 3 and above hurricanes.
 
 ```{r}
-#TO-DO
+serious_storms = storms %>% filter(category >= 3)
+serious_storms
 ```
 
 In `serious_storms`, merge the variables lat and long together into `lat-long` with values `lat / long` as a string.
 
 ```{r}
-#TO-DO
+serious_storms %<>%
+  unite(lat_long, lat, long, sep = '/')
+serious_storms
 ```
 
 Back to the main dataframe `storms`, create a new feature `decile_windspeed` by binning wind speed into 10 bins.
 
 ```{r}
-#TO-DO
+storms %<>%
+  mutate(decile_windspeed = factor(ntile(wind,10)))
+storms
 ```
 
 Let's summarize some data. Find the strongest storm by wind speed per year.
 
 ```{r}
-#TO-DO
+storms %>%
+  group_by(year) %>%
+  summarize(max_wind_speed = max(wind))
 ```
 
 For each status, find the average category, wind speed, pressure and diameters (do not allow the average to be NA).
 
 ```{r}
-#TO-DO
+storms %>%
+  group_by(status) %>%
+  summarize(avg_category = mean(as.numeric(as.character(category))), avg_wind_speed = mean(wind), avg_pressure = mean(pressure), avg__ts_diameters = mean(ts_diameter, na.rm = TRUE), avg__hu_diameters = mean(hu_diameter, na.rm = TRUE) )
 ```
 
 For each named storm, find its maximum category, wind speed, pressure and diameters (do not allow the max to be NA) and the number of readings (i.e. observations).
@@ -132,25 +146,47 @@ Now we want to transition to building real design matrices for prediction. We wa
 Load the Boston Housing Data from package `MASS` and use `str` and `summary` to remind yourself of the features and their types and then use `?MASS::Boston` to read an English description of the features.
 
 ```{r}
-#TO-DO
+data(Boston, package = "MASS")
+summary(Boston)
+str(Boston)
+?MASS::Boston
 ```
 
 Using your knowledge of the modeling problem, try to guess which features are interacting. Confirm using plots in `ggplot` that illustrate three (or more) features.
 
 ```{r}
-#TO-DO
+pacman::p_load(ggplot2)
+base = ggplot(Boston, aes(x = rm, y = medv))
+base + geom_point(aes(col=crim))
 ```
 
 Once an interaction has been located, confirm the "non-linear linear" model with the interaction term does better than just the vanilla linear model.
 
 ```{r}
-#TO-DO
+mod = lm(medv ~ rm * crim, Boston)
+coef(mod)
+
+mod_vanilla = lm(medv~rm+crim,Boston)
+summary(mod_vanilla)$r.squared
+summary(mod_vanilla)$sigma
+summary(mod)$r.squared
+summary(mod)$sigma
+
 ```
 
 Repeat this procedure for another interaction with two different features (not used in the previous interaction you found) and verify.
 
 ```{r}
-#TO-DO
+base + geom_point(aes(col=zn))
+
+mod = lm(medv ~ rm * zn, Boston)
+coef(mod)
+
+mod_vanilla = lm(medv~rm+zn,Boston)
+summary(mod_vanilla)$r.squared
+summary(mod_vanilla)$sigma
+summary(mod)$r.squared
+summary(mod)$sigma
 ```
 
 Fit a model using all possible first-order interactions. Verify it is "better" than the linear model. Do you think you overfit? Why or why not?
