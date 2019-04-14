@@ -91,10 +91,10 @@ ggplot(mpg, aes(x = cty, y = hwy)) +
 Convert `cyl` to an ordinal factor. Then use the package `dplyr` to retain only cars with 4, 6, 8 cylinders in the dataset. Then make a canonical illustration of `cty` by `cyl`.
 
 ```{r}
-mpg$cyl = factor(mpg$cyl, ordered = TRUE)
-#mpg$cyl
 pacman::p_load(dplyr)
-mpg = mpg %>%
+
+mpg %<>%
+  mutate(cyl = factor(cyl,ordered = TRUE)) %>%
   filter(cyl %in% c(4, 6, 8))
 ggplot(mpg, aes(x = cyl, y = cty)) +
   geom_boxplot() +
@@ -108,28 +108,32 @@ Load the `stringr` library. Use the `str_detect` function in this libary to rewr
 pacman::p_load(stringr)
 mpg$trans = ifelse(str_detect(mpg$trans,"^a"), 'automatic','manual')
 mpg$trans
-
 ```
 
 Now visualize `cty` by `trans` via two overlapping alpha-blended densities. 
 
 ```{r}
-ggplot(mpg,aes(cty,trans)) +
-  #geom_density(fill = "red", col ="white", alpha = 0.2)
-  geom_density(aes(cty), fill = "blue", col = "white", alpha = 0.2)
+ggplot(mpg,aes(x = cty, y = trans)) +
+  geom_density(fill = "red", col ="white", alpha = 0.2)
+
+# Well now, this doesn't seem very useful.
 ```
 
 Now visualize `cty` by `trans` via a box and whisker plot.
 
 ```{r}
-#TO-DO
+ggplot(mpg,aes(x = cty, y = trans)) +
+  geom_boxplot()
 ```
 
 
 Now visualize `cty` by `drv` by `trans` via two box and whisker plots horizontally laid out.
 
 ```{r}
-#TO-DO
+ggplot(mpg, aes(x = drv, y = cty)) +
+  geom_boxplot()
+ggplot(mpg, aes(x = drv, y = trans)) +
+  geom_boxplot()
 ```
 
 Now visualize `cty` by `class` via a violin plot. Look at the ggplot cheatsheet!
@@ -142,39 +146,58 @@ ggplot(mpg, aes(x = class, y = cty)) +
 
 Make a pie chart of `class`.
 ```{r}
-#TO-DO
+pie(table(mpg$class))
 ```
 Visualize `trans` vs `class`. Look at the ggplot cheatsheet!
 
 ```{r}
-#TO-DO
+ggplot(mpg, aes(x = class, y = trans)) +
+  geom_point() +
+  labs(title = "Transmission by Vehicle Type", x = "Class", y = "Trans (Automatic or Manual", caption = "Source: EPA 2008 Fuel Economy Dataset")
+
 ```
 
 Using the package `ggExtra`'s `ggMarginal` function, look at the `hwy` by `year` and plot the marginal density on both the x and y axes.
 
 ```{r}
-pacman::p_load(ggExtra, ggMarginal)
-#ggMarginal is not available for 3.53
+pacman::p_load(ggExtra)
+
+p2 = ggplot(mpg, aes(x = hwy, y = year)) + 
+  geom_count()
+  
+ggMarginal(p2, type = "density")
+p2
 ```
 
 Using the package `ggcorrplot`'s `ggcorrplot` function, look at the correlations for all variables in this dataset that are legal in a corrrelogram. Use dplyr to `select_if` the variable is appropriate.
 
 ```{r}
-pacman::p_load(ggcorrplot)
-?ggcorrplot
-
+pacman::p_load(ggcorrplot, dplyr)
+sapply(mpg, class) == '"ordered" "factor"'
+mpg %>%
+  mutate(cyl = as.numeric(as.character(cyl))) %>%
+  select_if(is.numeric) %>%
+  ggcorrplot()
 ```
 
 Use the `stat_ecdf` function to plot the estimated cumulative distribution of `cty'.
 
 ```{r}
-#TO-DO
+ggplot(mpg, aes(cty))+
+  stat_ecdf()
 ```
 
 Create a data generating process where $x$ is uniform between 0 and 10 and $y$ is $x^2$ plus $N(0,1)$ noise. Plot $n = 200$ points and then plot the quadratic relationship $y = x^2$ using the function `stat_function`.
 
 ```{r}
-#TO-DO
+x = runif(100,0,10)
+y = x^2 + rnorm(200)
+Xy = cbind(x,y)
+Xy = data.frame(Xy)
+ggplot(Xy, aes(x,y)) + 
+  geom_point()+
+  stat_function(fun = function(x){y=x^2}, col = "green")
+
 ```
 
 We now move to Rcpp. Load the library.
@@ -230,12 +253,17 @@ cppFunction('
 Using `system.time', run both functions on the numbers 1, 2, ..., 100. Who is faster and by how much?
 
 ```{r}
-system.time(
-    fun(2)
-)
-system.time(
-  fun_cpp(10)
-)
+#system.time(
+#  for(i in 1:100){
+#    fun(i)
+#  }
+#)
+#system.time(
+#  for(i in 1:100){
+#      fun_cpp(i)
+#  }
+#)
+#this breaks
 ```
 
 Write an R function `logs` and a C++ function `logs_cpp` that takes a natural number $n$ and returns an array of $ln(1), ln(2), ..., ln(n)$. 
@@ -259,12 +287,16 @@ cppFunction('
 Using `system.time', run both functions on the numbers 1, 2, ..., 1000000. Who is faster and by how much?
 
 ```{r}
-system.time(
-  logs(1e6)
-)
-system.time(
-  logs_cpp(1e6)
-)
+#system.time(
+#  for(i in 1:1e6){
+#    logs(i)
+#  }
+#)
+#system.time(
+#  for(i in 1:1e6){
+#    logs_cpp(i)
+#  }
+#)
 ```
 
 Write an R function `max_distances` and a C++ function `max_distances_cpp` that takes an $n \times p$ matrix $X$ and returns an $n \times n$ matrix called $D$ of NA's where the upper triangular portion above the diagonal is the max distances between the elements of the $i, j$th rows of $X$.
