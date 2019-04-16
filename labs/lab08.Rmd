@@ -113,10 +113,10 @@ mpg$trans
 Now visualize `cty` by `trans` via two overlapping alpha-blended densities. 
 
 ```{r}
-ggplot(mpg,aes(x = cty, y = trans)) +
-  geom_density(fill = "red", col ="white", alpha = 0.2)
+ggplot(mapping = aes(cty)) +
+  geom_density(data = mpg %>% filter(trans == "automatic"), fill = "blue", col ="white", alpha = 0.2)+
+  geom_density(data = mpg %>% filter(trans == "manual"), fill = "red", col ="white", alpha = 0.2)
 
-# Well now, this doesn't seem very useful.
 ```
 
 Now visualize `cty` by `trans` via a box and whisker plot.
