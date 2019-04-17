@@ -1,6 +1,6 @@
 ---
 title: "Lab 8"
-author: "Your Name Here"
+author: "Moshe Weiss"
 output: pdf_document
 date: "11:59PM April 7, 2019"
 ---
@@ -91,10 +91,10 @@ ggplot(mpg, aes(x = cty, y = hwy)) +
 Convert `cyl` to an ordinal factor. Then use the package `dplyr` to retain only cars with 4, 6, 8 cylinders in the dataset. Then make a canonical illustration of `cty` by `cyl`.
 
 ```{r}
-mpg$cyl = factor(mpg$cyl, ordered = TRUE)
-#mpg$cyl
 pacman::p_load(dplyr)
-mpg = mpg %>%
+
+mpg %<>%
+  mutate(cyl = factor(cyl,ordered = TRUE)) %>%
   filter(cyl %in% c(4, 6, 8))
 ggplot(mpg, aes(x = cyl, y = cty)) +
   geom_boxplot() +
@@ -105,26 +105,35 @@ ggplot(mpg, aes(x = cyl, y = cty)) +
 Load the `stringr` library. Use the `str_detect` function in this libary to rewrite the `trans` variable in the data frame to be just "manual" or "automatic".
 
 ```{r}
-#TO-DO
+pacman::p_load(stringr)
+mpg$trans = ifelse(str_detect(mpg$trans,"^a"), 'automatic','manual')
+mpg$trans
 ```
 
 Now visualize `cty` by `trans` via two overlapping alpha-blended densities. 
 
 ```{r}
-#TO-DO
+ggplot(mapping = aes(cty)) +
+  geom_density(data = mpg %>% filter(trans == "automatic"), fill = "blue", col ="white", alpha = 0.2)+
+  geom_density(data = mpg %>% filter(trans == "manual"), fill = "red", col ="white", alpha = 0.2)
+
 ```
 
 Now visualize `cty` by `trans` via a box and whisker plot.
 
 ```{r}
-#TO-DO
+ggplot(mpg,aes(x = cty, y = trans)) +
+  geom_boxplot()
 ```
 
 
 Now visualize `cty` by `drv` by `trans` via two box and whisker plots horizontally laid out.
 
 ```{r}
-#TO-DO
+ggplot(mpg, aes(x = drv, y = cty)) +
+  geom_boxplot()
+ggplot(mpg, aes(x = drv, y = trans)) +
+  geom_boxplot()
 ```
 
 Now visualize `cty` by `class` via a violin plot. Look at the ggplot cheatsheet!
@@ -136,92 +145,217 @@ ggplot(mpg, aes(x = class, y = cty)) +
 ```
 
 Make a pie chart of `class`.
-
+```{r}
+pie(table(mpg$class))
+```
 Visualize `trans` vs `class`. Look at the ggplot cheatsheet!
 
 ```{r}
-#TO-DO
+ggplot(mpg, aes(x = class, y = trans)) +
+  geom_point() +
+  labs(title = "Transmission by Vehicle Type", x = "Class", y = "Trans (Automatic or Manual", caption = "Source: EPA 2008 Fuel Economy Dataset")
+
 ```
 
 Using the package `ggExtra`'s `ggMarginal` function, look at the `hwy` by `year` and plot the marginal density on both the x and y axes.
 
 ```{r}
-#TO-DO
+pacman::p_load(ggExtra)
+
+p2 = ggplot(mpg, aes(x = hwy, y = year)) + 
+  geom_count()
+  
+ggMarginal(p2, type = "density")
+p2
 ```
 
 Using the package `ggcorrplot`'s `ggcorrplot` function, look at the correlations for all variables in this dataset that are legal in a corrrelogram. Use dplyr to `select_if` the variable is appropriate.
 
 ```{r}
-#TO-DO
+pacman::p_load(ggcorrplot, dplyr)
+sapply(mpg, class) == '"ordered" "factor"'
+mpg %>%
+  mutate(cyl = as.numeric(as.character(cyl))) %>%
+  select_if(is.numeric) %>%
+  ggcorrplot()
 ```
 
 Use the `stat_ecdf` function to plot the estimated cumulative distribution of `cty'.
 
 ```{r}
-#TO-DO
+ggplot(mpg, aes(cty))+
+  stat_ecdf()
 ```
 
 Create a data generating process where $x$ is uniform between 0 and 10 and $y$ is $x^2$ plus $N(0,1)$ noise. Plot $n = 200$ points and then plot the quadratic relationship $y = x^2$ using the function `stat_function`.
 
 ```{r}
-#TO-DO
+x = runif(100,0,10)
+y = x^2 + rnorm(200)
+Xy = cbind(x,y)
+Xy = data.frame(Xy)
+ggplot(Xy, aes(x,y)) + 
+  geom_point()+
+  stat_function(fun = function(x){y=x^2}, col = "green")
+
 ```
 
 We now move to Rcpp. Load the library.
 
 ```{r}
-#TO-DO
+library(Rcpp)
 ```
 
 Write an R function `is_odd` and a C++ function `is_odd_cpp` that evaluates if a number is odd and returns true if so.
 
 
 ```{r}
-#TO-DO
+is_odd = function(n){
+  n %% 2 == 1
+}
+cppFunction('
+  bool is_odd_cpp(int n){
+    return n % 2 == 1;
+  }
+')
 ```
 
 Using `system.time', run both functions 1,000,000 times on the numbers 1, 2, ..., 1000000. Who is faster and by how much?
 
 ```{r}
-#TO-DO
+system.time(
+  for(i in 1:1e6){ 
+    is_odd(i)
+  }
+)
+system.time(
+  for(i in 1:1e6){
+    is_odd_cpp(i)
+  }
+)
 ```
 
 Write an R function `fun` and a C++ function `fun_cpp` that takes a natural number returns $n$ if $n$ is 0 or 1 otherwise the result of the function on $n - 1$ and $n - 2$. This is the function that returns the $n$th Fibonacci number.
 
 ```{r}
-#TO-DO
+fun = function(n){
+  if(n==0 | n==1) n
+  fun(n-2) + fun(n-1)
+}
+cppFunction('
+  int fun_cpp(int n){
+    if(n==0 || n==1) return n;
+    return fun_cpp(n-2) + fun_cpp(n-1);
+  }
+')
 ```
 
 Using `system.time', run both functions on the numbers 1, 2, ..., 100. Who is faster and by how much?
 
 ```{r}
-#TO-DO
+#system.time(
+#  for(i in 1:100){
+#    fun(i)
+#  }
+#)
+#system.time(
+#  for(i in 1:100){
+#      fun_cpp(i)
+#  }
+#)
+#this breaks
 ```
 
 Write an R function `logs` and a C++ function `logs_cpp` that takes a natural number $n$ and returns an array of $ln(1), ln(2), ..., ln(n)$. 
 
 ```{r}
-#TO-DO
+logs = function(n){
+  array(log(1:n), n)
+}
+
+cppFunction('
+  NumericVector logs_cpp(int n){
+    NumericVector v(n);
+    for(int i=1; i<=n;i++){
+      v[i] = log(i);
+    }
+    return v;
+  }
+')
 ```
 
 Using `system.time', run both functions on the numbers 1, 2, ..., 1000000. Who is faster and by how much?
 
 ```{r}
-#TO-DO
+#system.time(
+#  for(i in 1:1e6){
+#    logs(i)
+#  }
+#)
+#system.time(
+#  for(i in 1:1e6){
+#    logs_cpp(i)
+#  }
+#)
 ```
 
 Write an R function `max_distances` and a C++ function `max_distances_cpp` that takes an $n \times p$ matrix $X$ and returns an $n \times n$ matrix called $D$ of NA's where the upper triangular portion above the diagonal is the max distances between the elements of the $i, j$th rows of $X$.
 
 
 ```{r}
-#TO-DO
+
+max_distances = function(X){
+  n = nrow(X)
+  p = ncol(X)
+  D = matrix(NA,nrow = n, ncol = n)
+  for(i_1 in 1:(n - 1)){
+    for(i_2 in (i_1 + 1):n){
+      sqd_diff = 0
+      for(j in 1:p){
+        sqd_diff = sqd_diff + (X[i_1, j] - X[i_2, j])^2
+      }
+      D[i_1, i_2] = sqrt(sqd_diff)
+    }
+  }
+  D
+}
+
+cppFunction('
+NumericMatrix max_distances_cpp(NumericMatrix X) {
+int n = X.nrow();
+int p = X.ncol();
+NumericMatrix D(n, n);
+std::fill(D.begin(), D.end(), NA_REAL);
+
+for (int i_1 = 0; i_1 < (n - 1); i_1++){
+  for (int i_2 = i_1 + 1; i_2 < n; i_2++){
+    int sqd_diff = 0;
+    for (int j = 0; j < p; j++){
+      sqd_diff += pow(X(i_1, j) - X(i_2, j), 2); //by default the cmath library in std is loaded
+    }
+    D(i_1, i_2) = sqrt(sqd_diff); //by default the cmath library in std is loaded
+  }
+}
+return D;
+}')
 ```
 
 Create a matrix $X$ of $n = 1000$ and $p = 20$ filled with iid $N(0, 1)$ realizations. Using `system.time', calculate $D$ using both functions. Who is faster and by how much?
 
 ```{r}
-#TO-DO
+n = 1000
+p = 20
+m = matrix(rnorm(n*p), nrow = n, ncol = p)
+
+system.time(
+  max_distances(m)  
+)
+system.time(
+  max_distances_cpp(m)
+)
+
 ```
+
 
 
 
