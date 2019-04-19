@@ -1,6 +1,6 @@
 ---
 title: "Lab 7"
-author: "Your Name Here"
+author: "Moshe Weiss"
 output: pdf_document
 date: "11:59PM March 31, 2019"
 ---
@@ -184,18 +184,6 @@ Validate the linear model for the Boston housing data where each feature is also
 Why do we need to log $x + 1$? Why not use log(x)?
 
 #TO-DO
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
