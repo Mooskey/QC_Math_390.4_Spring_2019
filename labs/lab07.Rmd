@@ -94,11 +94,27 @@ dim(Xy)
 Let $x$ be iid realizations from a $U(0, 5)$, $y$ comes from $f(x) = 3 - 4x + 2x^2$ and $\epsilon$ are iid realizations from a standard normal distribution. With no limit on the number of samples you cant take, use regular OLS _without a quadratic term_, find the true $h^*(x)$ (there will be no sampling variability at $n \rightarrow \infty$ and find the oos variance of the residuals.
 
 ```{r}
+n = 1e5
+
+x = runif(n,0,5)
+x_test = sample(x, n)
+x_train = 
+x
+x_train
+x_test
 
 
+f_x = 3-4*x[2]
+e = rnorm(n)
+y= f_x + e
 
+b = solve(t(x) %*% x) %*% t(x) %*% y
 
+h_star = b[1] + b[2]*x[, 2]
 
+x_test = 1e4
+
+oos_y_hat = b[1] + b[2]*x_test
 ```
 
 Was there any overfitting in the previous exercise?
