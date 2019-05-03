@@ -22,13 +22,12 @@ My lectures can be listened to as youtube tracks and lecture notes are also scan
   - Theory Notes [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec24kap.pdf) 
 * Lecture 23 [(audio)](https://youtu.be/VTQuwoUHv24)
   - [Practice Notes](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/practice_lectures/lec23.Rmd) 
-  - Theory Notes [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec23kap.pdf)
-* Lecture 22 [(audio)](https://youtu.be/-gdn0em3IcI)
-  - [Practice Notes](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/practice_lectures/lec22.Rmd) 
+  - Theory Notes [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec23kap.pdf)-->
+* Lecture 22 [(audio)](https://youtu.be/)
+  - [Practice Notes](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/practice_lectures/lec12.Rmd)
   - Theory Notes [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec22kap.pdf)
-* Lecture 21 [(audio)](https://youtu.be/bFuBCrvAtMU)
-  - [Practice Notes](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/practice_lectures/lec21.Rmd) 
-  - Theory Notes [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec20kap.pdf) -->
+* Lecture 21 [(audio)](https://youtu.be/) 
+  - Theory Notes [(Jan Bazant)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec21bazant.pdf) [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec21kap.pdf)
 * Lecture 20 [(audio)](https://youtu.be/)
   - [Practice Notes](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/practice_lectures/lec11.Rmd) 
   - Theory Notes [(Prof)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/lectures/lec20kap.pdf)
@@ -81,7 +80,9 @@ My lectures can be listened to as youtube tracks and lecture notes are also scan
 
 ## Labs
 
-* [(Lab 8, due 4/07)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab07.Rmd)
+* [(Lab 10, due 5/12)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab09.Rmd)
+* [(Lab 9, due 4/14)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab09.Rmd)
+* [(Lab 8, due 4/07)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab08.Rmd)
 * [(Lab 7, due 3/31)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab07.Rmd)
 * [(Lab 6, due 3/24)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab06.Rmd)
 * [(Lab 5, due 3/16)](https://github.com/kapelner/QC_Math_390.4_Spring_2019/blob/master/labs/lab05.Rmd)
