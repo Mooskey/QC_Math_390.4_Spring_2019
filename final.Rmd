@@ -1,0 +1,58 @@
+---
+title: "Math 390 Final Project"
+author: "Moshe Weiss"
+date: "5/10/2019"
+output: html_document
+---
+
+
+
+```{r cars}
+pacman::p_load(dplyr, tidyr, magrittr, lubridatem, mlr)
+
+pacman::p_install_gh("kapelner/YARF", subdir = "YARF", ref = "dev")
+pacman::p_load(rJava)
+
+housing_data = read.csv("writing_assignments/housing_data_2016_2017.csv", stringsAsFactors = FALSE)
+
+q_housing = as.data.frame(housing_data)
+q_housing 
+
+q_housing %<>%
+  select(num_bedrooms, 
+         num_floors_in_building, 
+         kitchen_type, 
+         maintenance_cost, 
+         num_full_bathrooms, 
+         num_total_rooms, 
+         sq_footage, 
+         total_taxes, 
+         walk_score, 
+         dining_room_type, 
+         fuel_type, cats_allowed, 
+         dogs_allowed, 
+         sale_price
+        ) %>%
+  mutate(kitchen_type = tolower(kitchen_type)) %>%
+  mutate(kitchen_type = as.numeric(factor(kitchen_type, ordered = FALSE))) %>%
+  mutate(dining_room_type = tolower(dining_room_type)) %>%
+  mutate(dining_room_type = as.numeric(factor(dining_room_type, ordered = FALSE))) %>%
+  mutate(fuel_type = tolower(fuel_type)) %>%
+  mutate(fuel_type = as.numeric(factor(fuel_type, ordered = FALSE))) %>%
+  mutate(maintenance_cost = as.numeric(factor(maintenance_cost, ordered = FALSE))) %>%
+  mutate(dogs_allowed = ifelse(substr(.$dogs_allowed, 1, 1) == "y", 1, 0)) %>%
+  mutate(cats_allowed = ifelse(substr(.$cats_allowed, 1, 1) == "y", 1, 0)) # %>%
+
+q_housing$sale_price =  as.numeric(gsub('[$,]', '', q_housing$sale_price))
+q_housing$total_taxes =  as.numeric(gsub('[$,]', '', q_housing$total_taxes))
+unique(q_housing$cats_allowed)
+
+
+
+# modeling_task = makeRegrTask(data = q_housing , target = "sale_price") 
+# algorithm = makeLearner("regr.lm")
+# validation = makeResampleDesc("CV", iters = 5) #instantiate the 5-fold CV
+# resample(algorithm, modeling_task, validation)
+```
+
+
