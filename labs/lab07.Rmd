@@ -95,16 +95,18 @@ Let $x$ be iid realizations from a $U(0, 5)$, $y$ comes from $f(x) = 3 - 4x + 2x
 
 ```{r}
 n = 1e5
-
+K = 10
 x = runif(n,0,5)
-x_test = sample(x, n)
-x_train = 
-x
-x_train
-x_test
+x = cbind(1,x)
+
+test_indices = sample(1 : nrow(x), 1 / K * nrow(Xy))
+train_indices = setdiff(1 : nrow(x), test_indices)
+
+x_test = x[test_indices, ]
+x_train = x[train_indices, ]
 
 
-f_x = 3-4*x[2]
+f_x = 3-4*x[, 2]^2
 e = rnorm(n)
 y= f_x + e
 
@@ -112,33 +114,68 @@ b = solve(t(x) %*% x) %*% t(x) %*% y
 
 h_star = b[1] + b[2]*x[, 2]
 
-x_test = 1e4
-
 oos_y_hat = b[1] + b[2]*x_test
 ```
 
 Was there any overfitting in the previous exercise?
 
-#TO-DO
+Nope
+
 
 Find the error due to misspecification and due to ignorance expressed as variance of components of the residuals.
 
 ```{r}
-#TO-DO
+
+mispecError1 = sd(f_x - h_star)
+
+ignoranceError1 = sd(y - f_x)
+mispecError1
+ignoranceError1
 ```
 
 At $n = 100$, find the error due to estimation, due to misspecification and due to ignorance expressed as variance of components of the residuals.
 
 
 ```{r}
-#TO-DO
+n=100
+
+x = runif(n,0,5)
+x = cbind(1,x)
+
+test_indices = sample(1 : nrow(x), 1 / K * nrow(Xy))
+train_indices = setdiff(1 : nrow(x), test_indices)
+
+x_test = x[test_indices, ]
+x_train = x[train_indices, ]
+
+
+f_x = 3-4*x[, 2]^2
+e = rnorm(n)
+y= f_x + e
+
+b = solve(t(x) %*% x) %*% t(x) %*% y
+
+h_star = b[1] + b[2]*x[, 2]
+
+oos_y_hat = b[1] + b[2]*x_test
+
+mispecError2 = sd(f_x - h_star)
+
+ignoranceError2 = sd(y - f_x)
+mispecError2
+ignoranceError2
 ```
 
 Do the variances add up to the total variance of the residual?
 
 
 ```{r}
-#TO-DO
+lin_mod = lm('y~x')
+yhat = predict(lin_mod, data = x)
+total_var = sd(y - yhat)
+sum((y-yhat)^2)
+total_var
+yhat
 ```
 
 
@@ -161,7 +198,7 @@ y_train = y[train_indices]
 X_test = X[test_indices, ]
 y_test = y[test_indices]
 
-lin_mod = lm(y_train ~ ., X_train)
+lin_mod = lm('y_train ~ .', X_train)
 #lin_mod
 sd(lin_mod$residuals)
 y_hat_test = predict(lin_mod, X_test)

@@ -11,7 +11,9 @@ First load the tree-building package:
 options(java.parameters = "-Xmx4000m")
 # pacman::p_install_gh("kapelner/YARF", subdir = "YARF", ref = "dev")
 pacman::p_load(YARF)
+?tolower
 ```
+
 
 Let's take a look at the simulated sine curve data (i.e. the illustration I drew on the board last class)
 
