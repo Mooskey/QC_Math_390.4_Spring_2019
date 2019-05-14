@@ -7,12 +7,16 @@ output: html_document
 
 
 
-```{r cars}
+```{r}
+#Dependencies
 pacman::p_load(dplyr, tidyr, magrittr, mlr, missForest)
-
 pacman::p_install_gh("kapelner/YARF", subdir = "YARF", ref = "dev")
+pacman::p_install_gh("kapelner/YARF", subdir = "YARFJARs", ref = "dev")
 pacman::p_load(YARF)
+```
 
+```{r}
+#Data Cleaning and Imputation
 housing_data = read.csv("writing_assignments/housing_data_2016_2017.csv", stringsAsFactors = FALSE)
 
 q_housing = as.data.frame(housing_data)
@@ -31,9 +35,6 @@ q_housing %<>%
   mutate(cats_allowed = ifelse(substr(.$cats_allowed, 1, 1) == "y", 1, 0)) %>%
   mutate(sale_price =  as.numeric(gsub('[$,]', '', q_housing$sale_price))) 
 
-na.omit(q_housing)
-dim(q_housing)
-
 
 missingTable = tbl_df(apply(is.na(q_housing), 2, as.numeric))
 colnames(missingTable) = paste("is_missing_", colnames(q_housing), sep = "")
@@ -43,7 +44,9 @@ missingTable %<>%
 
 imp_q_housing = missForest(q_housing, sampsize = rep(200, ncol(q_housing)))$ximp
 imp_q_housing
+```
 
+```{r}
 #REGRESSION OLS
 modeling_task = makeRegrTask(data = imp_q_housing, target = "sale_price") 
 algorithm = makeLearner("regr.lm")
@@ -51,6 +54,24 @@ validation = makeResampleDesc("CV", iters = 3) #instantiate the 5-fold CV
 pred = resample(algorithm, modeling_task, validation, measures = list(rmse))
 mean(pred$measures.test$rmse)
 sd(pred$measures.test$rmse)
+```
+
+```{r}
+#REGRESSION TREE
+options(java.parameters = "-Xmx4000m")
+pacman::p_load(YARF)
+
+y = imp_q_housing$sale_price
+imp_q_housing%<>%
+  select(-sale_price)
+
+test_prop = .1
+train_indices = sample
+tree_mod = YARFCART(data.frame(X = imp_q_housing), y, nodesize = 25)
+get_tree_num_nodes_leaves_max_depths(tree_mod)
+illustrate_trees(tree_mod, max_depth = 4, open_file = TRUE)
+
+
 ```
 
 
