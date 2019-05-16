@@ -42,8 +42,8 @@ missingTable = tbl_df(t(unique(t(missingTable))))
 missingTable %<>% 
   select_if(function(x){sum(x) > 0})
 
-imp_q_housing = missForest(q_housing, sampsize = rep(200, ncol(q_housing)))$ximp
-imp_q_housing
+imp_q_housing = missForest(q_housing, sampsize = rep(520, ncol(q_housing)))$ximp
+
 ```
 
 ```{r}
@@ -65,13 +65,66 @@ y = imp_q_housing$sale_price
 imp_q_housing%<>%
   select(-sale_price)
 
-test_prop = .1
-train_indices = sample
-tree_mod = YARFCART(data.frame(X = imp_q_housing), y, nodesize = 25)
+nrow(imp_q_housing)
+
+# test_size = 200
+# train_indices = sample(1 : nrow(imp_q_housing), test_size)
+# X_train = imp_q_housing[train_indices, ]
+# y_train = y[train_indices]
+# 
+# nrow(X_train)
+# length(setdiff((1:nrow(imp_q_housing)),train_indices))
+# 
+# test_indices = sample(setdiff(1 : nrow(imp_q_housing), train_indices), test_size)
+# X_test = imp_q_housing[test_indices, ]
+# y_test = y[test_indices]
+# 
+# nrow(X_train)
+# nrow(X_test)
+
+test_prop = 0.1
+train_indices = sample(1 : nrow(imp_q_housing), round((1 - test_prop) * nrow(imp_q_housing)))
+imp_q_train = imp_q_housing[train_indices, ]
+y_train = imp_q_train$sale_price
+X_train = imp_q_train
+X_train$sale_price = NULL
+test_indices = setdiff(1 : nrow(imp_q_train), train_indices)
+imp_q_test = imp_q_housing[test_indices, ]
+y_test = imp_q_test$sale_price
+X_test = imp_q_test
+X_test$sale_price = NULL
+
+tree_mod = YARFCART(data.frame(X = X_train), y_train)
+tree_mod
 get_tree_num_nodes_leaves_max_depths(tree_mod)
 illustrate_trees(tree_mod, max_depth = 4, open_file = TRUE)
+?YARFCART
+tree_mod[[3L]]
 
-
+y_hat_test = predict(tree_mod, X_test)
+y_hat_test
 ```
 
+```{r}
+#RANDOM FOREST
+# y = imp_q_housing$sale_price
+# X = imp_q_housing
+# X$sale_price= NULL
+# mod_bag = YARFBAG(X, y, num_trees = 100)
+# mod_bag
+# mod_rf = YARF(X, y, num_trees = 100)
+# mod_rf
+# 
+# illustrate_trees(mod_rf, max_depth = 4, open_file = TRUE)
+# 
+# y_h = predict(mod_rf, imp_q_housing, y)
+#   
+
+modeling_task = makeRegrTask(data = imp_q_housing, target = "sale_price") 
+algorithm = makeLearner("regr.randomForest")
+validation = makeResampleDesc("CV", iters = 5) #instantiate the 5-fold CV
+pred = resample(algorithm, modeling_task, validation, measures = list(rmse))
+mean(pred$measures.test$rmse)
+sd(pred$measures.test$rmse)
+```
 
