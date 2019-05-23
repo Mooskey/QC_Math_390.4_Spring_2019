@@ -106,7 +106,7 @@ X_test$sale_price = NULL
 tree_mod = YARFCART(data.frame(X = X_train), y_train)
 tree_mod
 get_tree_num_nodes_leaves_max_depths(tree_mod)
-illustrate_trees(tree_mod, max_depth = 4, open_file = TRUE)
+illustrate_trees(tree_mod, max_depth = 4, open_file = TRUE, length_in_px_per_half_split = 30)
 ```
 
 ```{r}
@@ -119,7 +119,7 @@ X$sale_price= NULL
 mod_rf = YARF(X, y, num_trees = 100)
 mod_rf
 
-#illustrate_trees(mod_rf, max_depth = 4, open_file = TRUE)
+illustrate_trees(mod_rf, max_depth = 4, open_file = TRUE, length_in_px_per_half_split = 30)
 
 y_h = predict(mod_rf, imp_q_housing, y)
 ```
