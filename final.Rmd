@@ -79,7 +79,6 @@ validation = makeResampleDesc("CV", iters = 3) #instantiate the 5-fold CV
 pred = resample(algorithm, modeling_task, validation, measures = list(rmse))
 mean(pred$measures.test$rmse)
 sd(pred$measures.test$rmse)
-pred
 
 linmod = lm(sale_price ~ ., imp_q_housing)
 summary(linmod)
