@@ -36,6 +36,8 @@ q_housing %<>%
   mutate(sale_price =  as.numeric(gsub('[$,]', '', q_housing$sale_price))) %>%
   mutate(coop_condo = factor(tolower(coop_condo))) %>%
   mutate(garage_exists = ifelse(is.na(garage_exists), 0, 1)) #%>%
+#ID col for selecting missing y's
+  #mutate(id = 1:nrow(q_housing))
 
 #place 2 none values in other
   q_housing$dining_room_type[q_housing$dining_room_type == "none" & !is.na(q_housing$dining_room_type)] = "other"
@@ -45,9 +47,7 @@ q_housing %<>%
 
 #place 3 none values for fuel_type in other  
   q_housing$fuel_type[q_housing$fuel_type == "none" & !is.na(q_housing$fuel_type)] = "other"
-
-  #ID col for selecting missing y's
-  #mutate(id = 1:nrow(q_housing))
+  
 
 
 #identifying missing y's
