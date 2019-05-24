@@ -56,7 +56,7 @@ missingTable = tbl_df(t(unique(t(missingTable))))
 missingTable %<>% 
   select_if(function(x){sum(x) > 0})
 
-imp_q_housing = missForest(q_housing, sampsize = rep(520, ncol(q_housing)))$ximp
+imp_q_housing = missForest(q_housing, sampsize = rep(525, ncol(q_housing)))$ximp
 
 #Includes missingness in dataset. No significant difference observed.
   #imp_q_housing = cbind(imp_q_housing, missingTable)
@@ -116,11 +116,44 @@ y = imp_q_housing$sale_price
 X = imp_q_housing
 X$sale_price= NULL
 
-mod_rf = YARF(X, y, num_trees = 100)
+mod_rf = YARF(X, y, num_trees = 300)
 mod_rf
 
 illustrate_trees(mod_rf, max_depth = 4, open_file = TRUE, length_in_px_per_half_split = 30)
 
-y_h = predict(mod_rf, imp_q_housing, y)
+#mlr random forest
+# modeling_task = makeRegrTask(data = imp_q_housing, target = "sale_price") 
+# algorithm = makeLearner("regr.randomForest")
+# validation = makeResampleDesc("CV", iters = 5) #instantiate the 5-fold CV
+# pred = resample(algorithm, modeling_task, validation, measures = list(rmse))
+# mean(pred$measures.test$rmse)
+# sd(pred$measures.test$rmse)
+
+test_prop = 0.1
+
+train_indices = sample(1 : nrow(imp_q_housing), round((1 - test_prop) * nrow(imp_q_housing)))
+imp_q_train = imp_q_housing[train_indices, ]
+y_train = imp_q_train$sale_price
+X_train = imp_q_train
+X_train$sale_price = NULL
+
+test_indices = setdiff(1 : nrow(imp_q_train), train_indices)
+imp_q_test = imp_q_housing[test_indices, ]
+y_test = imp_q_test$sale_price
+X_test = imp_q_test
+X_test$sale_price = NULL
+
+holdout_mod_rf = YARF(X_train, y_train, num_trees = 300)
+holdout_mod_rf
+
+y_hat_test = predict(holdout_mod_rf, X_test)
+holdout_rmse = sqrt(mean((y_test - y_hat_test)^2))
+holdout_rmse
+holdout_rsq = 1 - sum((y_test - y_hat_test)^2)/sum((y_test - mean(y))^2)
+holdout_rsq
+
+ggplot(aes(y_hat_test, y_test), data = data.frame(y_test, y_hat_test)) +
+  geom_point(col = "darkgreen")+
+  geom_abline(col = "black")
 ```
 
